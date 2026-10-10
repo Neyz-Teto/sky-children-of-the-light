@@ -1,6 +1,6 @@
 ---
 const { item, media } = Astro.props;
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 const localPath = media.local ? `${base}${media.local}` : `${base}media/placeholder.svg`;
 const fallbackPath = media.poster?.startsWith('http') ? media.poster : `${base}${media.poster || 'media/placeholder.svg'}`;
 const hqFallback = media.youtubeId ? `https://i.ytimg.com/vi/${media.youtubeId}/hqdefault.jpg` : '';

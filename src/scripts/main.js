@@ -3,7 +3,7 @@ import Lenis from 'lenis';
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const coarsePointer = window.matchMedia('(hover: none), (pointer: coarse)').matches;
 const pageName = document.body.dataset.page || '';
-const mediaBase = import.meta.env.BASE_URL;
+const mediaBase = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 let lenis;
 let lenisFrame = 0;
 let atmosphereFrame = 0;

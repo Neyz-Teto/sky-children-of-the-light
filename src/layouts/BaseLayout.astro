@@ -8,7 +8,7 @@ const {
   route = '',
   ogImage = 'https://i.ytimg.com/vi/feOR2GZxs2s/maxresdefault.jpg',
 } = Astro.props;
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 const canonical = Astro.site ? new URL(`${base}${route}`, Astro.site).toString() : undefined;
 const repoUrl = import.meta.env.PUBLIC_REPO_URL || 'https://github.com/';
 const issuesUrl = `${repoUrl.replace(/\/$/, '')}/issues`;

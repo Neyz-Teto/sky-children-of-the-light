@@ -1,7 +1,7 @@
 ---
 import { existsSync } from 'node:fs';
 const media = Astro.props.media;
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 const localHero = existsSync(new URL('../../public/media/hero/hero.mp4', import.meta.url));
 const poster = `https://i.ytimg.com/vi/${media.youtubeId}/maxresdefault.jpg`;
 ---

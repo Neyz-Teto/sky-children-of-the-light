@@ -4,7 +4,7 @@ import MediaFrame from '../components/MediaFrame.astro';
 import spirits from '../data/spirits.json';
 import media from '../data/media.json';
 
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 const slots = Object.fromEntries(media.map((item) => [item.id, item]));
 ---
 
