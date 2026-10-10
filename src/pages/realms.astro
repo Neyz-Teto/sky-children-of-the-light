@@ -32,11 +32,11 @@ const next = `${base}spirits/`;
           <p class="eyebrow">{realm.number} / {realm.mood}</p>
           <h2 id={`realm-title-${realm.number}`} class="section-title">{realm.name}</h2>
           <p>{realm.description}</p>
-          {slots[realm.mediaId].status === 'verified' ? (
+          {slots[realm.mediaId].youtubeId ? (
             <a class="text-link" href={slots[realm.mediaId].sourceUrl} target="_blank" rel="noopener noreferrer">Tonton trailer resmi <span aria-hidden="true">↗</span></a>
-          ) : (
+          ) : slots[realm.mediaId].status === 'placeholder' ? (
             <p class="media-status-note">Visual khusus Realm ini masih menunggu sumber resmi yang bisa diverifikasi.</p>
-          )}
+          ) : null}
         </div>
         <span class="realm-scene__index" aria-hidden="true">{realm.number}</span>
       </section>

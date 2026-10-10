@@ -1,16 +1,15 @@
 ---
 const { item, media } = Astro.props;
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
-const localPath = media.local ? `${base}${media.local}` : `${base}media/placeholder.svg`;
-const fallbackPath = media.poster?.startsWith('http') ? media.poster : `${base}${media.poster || 'media/placeholder.svg'}`;
-const hqFallback = media.youtubeId ? `https://i.ytimg.com/vi/${media.youtubeId}/hqdefault.jpg` : '';
+const posterPath = media.poster?.startsWith('http') ? media.poster : `${base}${media.poster || 'media/placeholder.svg'}`;
+const fallbackPath = media.youtubeId ? `https://i.ytimg.com/vi/${media.youtubeId}/hqdefault.jpg` : `${base}media/placeholder.svg`;
 ---
 
 <article class={`gallery-item gallery-item--${item.shape}`} data-gallery-item data-filter={item.filter} data-gallery-id={media.id} data-youtube-id={media.youtubeId || ''} data-watch-url={media.youtubeId ? media.sourceUrl : ''} data-gallery-caption={`${item.label} · ${item.title}`}>
-  <a class="gallery-item__link" href={media.sourceUrl} target="_blank" rel="noopener noreferrer" data-gallery-open aria-label={`Lihat ${item.title} — ${item.label}`}>
+  <a class="gallery-item__link" href={media.youtubeId ? media.sourceUrl : posterPath} target="_blank" rel="noopener noreferrer" data-gallery-open aria-label={`${media.youtubeId ? 'Putar' : 'Lihat'} ${item.title} — ${item.label}`}>
     <span class="gallery-item__image">
-      <img src={localPath} data-fallback={fallbackPath} data-hq-fallback={hqFallback} alt={media.alt} width="1280" height="720" loading="lazy" decoding="async" />
-      <span class="gallery-item__overlay" aria-hidden="true"><span class="gallery-item__play"><span class="play-mark"></span></span></span>
+      <img src={posterPath} data-fallback={fallbackPath} data-hq-fallback={`${base}media/placeholder.svg`} alt={media.alt} width="1280" height="720" loading="lazy" decoding="async" />
+      {media.youtubeId && <span class="gallery-item__overlay" aria-hidden="true"><span class="gallery-item__play"><span class="play-mark"></span></span></span>}
     </span>
     <span class="gallery-item__caption"><span><small>{item.label}</small><strong>{item.title}</strong></span><i aria-hidden="true">↗</i></span>
   </a>

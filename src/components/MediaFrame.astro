@@ -1,10 +1,9 @@
 ---
 const { media, className = '', caption = '', eager = false, fit = 'cover', interactive = true, parallax = false } = Astro.props;
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
-const localPath = media.local ? `${base}${media.local}` : '';
-const fallbackPath = media.poster?.startsWith('http') ? media.poster : `${base}${media.poster || 'media/placeholder.svg'}`;
 const hasVideo = media.status === 'verified' && Boolean(media.youtubeId);
-const hqFallback = media.youtubeId ? `https://i.ytimg.com/vi/${media.youtubeId}/hqdefault.jpg` : '';
+const posterPath = media.poster?.startsWith('http') ? media.poster : `${base}${media.poster || 'media/placeholder.svg'}`;
+const hqFallback = media.youtubeId ? `https://i.ytimg.com/vi/${media.youtubeId}/hqdefault.jpg` : `${base}media/placeholder.svg`;
 const watchUrl = hasVideo ? `https://www.youtube.com/watch?v=${media.youtubeId}` : '';
 ---
 
@@ -19,9 +18,9 @@ const watchUrl = hasVideo ? `https://www.youtube.com/watch?v=${media.youtubeId}`
 >
   <div class="media-frame__image">
     <img
-      src={localPath || fallbackPath}
-      data-fallback={fallbackPath}
-      data-hq-fallback={hqFallback}
+      src={posterPath}
+      data-fallback={hqFallback}
+      data-hq-fallback={`${base}media/placeholder.svg`}
       alt={media.alt}
       width="1280"
       height="720"
@@ -37,9 +36,9 @@ const watchUrl = hasVideo ? `https://www.youtube.com/watch?v=${media.youtubeId}`
           <span class="media-frame__play-label">Putar video</span>
         </a>
       ) : null
-    ) : (
+    ) : media.status === 'placeholder' ? (
       <span class="media-frame__placeholder-label">Visual menyusul</span>
-    )}
+    ) : null}
   </div>
   {caption && <figcaption class="media-frame__caption">{caption}</figcaption>}
 </figure>

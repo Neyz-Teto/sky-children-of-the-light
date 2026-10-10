@@ -30,7 +30,7 @@ const slots = Object.fromEntries(media.map((item) => [item.id, item]));
     <div id="gallery-grid" class="gallery-grid">
       {gallery.map((item) => <GalleryItem item={item} media={slots[item.mediaId]} />)}
     </div>
-    <p class="gallery-note">Video dimuat hanya setelah dipilih. Thumbnail ditayangkan dari i.ytimg.com dan embed memakai YouTube no-cookie.</p>
+    <p class="gallery-note">Poster disimpan di situs agar tetap tampil. Video baru dimuat setelah dipilih melalui YouTube.</p>
   </section>
 
   <section class="next-page section-shell" aria-label="Kembali ke awal">

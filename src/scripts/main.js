@@ -7,7 +7,6 @@ const mediaBase = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_
 let lenis;
 let lenisFrame = 0;
 let atmosphereFrame = 0;
-let heroPlayer;
 let heroVisible = true;
 let pointerX = -100;
 let pointerY = -100;
@@ -535,7 +534,7 @@ function setupParticlesAndCursor() {
       atmosphereFrame = window.requestAnimationFrame(draw);
       return;
     }
-    if (context && !reducedMotion) {
+    if (context && !reducedMotion && !document.body.classList.contains('has-intro')) {
       context.clearRect(0, 0, width, height);
       const t = performance.now() * .001;
       particles.forEach((particle) => {
@@ -622,83 +621,42 @@ function setupHero() {
   } else if (hero) {
     const videoId = hero.dataset.youtubeId;
     const videoStart = Number(hero.dataset.start || 0);
-    const videoEnd = Number(hero.dataset.end || 0);
     const frame = hero.querySelector('[data-hero-frame]');
     const poster = hero.querySelector('.hero-media__poster');
-    const loadApi = () => {
-      if (window.YT?.Player) return Promise.resolve(window.YT);
-      if (!window.__ytApiPromise) {
-        window.__ytApiPromise = new Promise((resolve) => {
-          const previousReady = window.onYouTubeIframeAPIReady;
-          window.onYouTubeIframeAPIReady = () => {
-            previousReady?.();
-            resolve(window.YT);
-          };
-          const script = document.createElement('script');
-          script.src = 'https://www.youtube.com/iframe_api';
-          script.async = true;
-          document.head.append(script);
-        });
-      }
-      return window.__ytApiPromise;
-    };
-    loadApi().then((YT) => {
-      if (!frame || !hero.isConnected) return;
-      heroPlayer = new YT.Player(frame, {
-        videoId,
-        playerVars: { autoplay: reducedMotion ? 0 : 1, controls: 0, disablekb: 1, fs: 0, loop: 1, playlist: videoId, playsinline: 1, rel: 0, modestbranding: 1, start: videoStart, end: videoEnd, origin: location.origin },
-        events: {
-          onReady: (event) => {
-            event.target.mute();
-            event.target.setVolume(0);
-            if (heroVisible && !document.hidden && !reducedMotion) event.target.playVideo();
-            hero.classList.add('is-ready');
-          },
-          onStateChange: (event) => {
-            if (event.data === YT.PlayerState.PLAYING) {
-              hero.classList.add('is-playing');
-              if (poster) poster.style.opacity = '0';
-              window.dispatchEvent(new Event('sky:hero-playing'));
-              if (audio.enabled) audio.fadeAmbient(0);
-            }
-            if (event.data === YT.PlayerState.ENDED) heroPlayer?.seekTo(videoStart, true);
-          },
-          onError: () => window.dispatchEvent(new Event('sky:hero-error')),
-        },
-      });
-    }).catch(() => {});
     observeHero(hero);
     soundButton?.addEventListener('click', () => {
-      if (heroPlayer?.unMute) {
-        heroPlayer.unMute();
-        heroPlayer.setVolume(45);
-        heroPlayer.playVideo();
-        audio.fadeAmbient(0);
-        soundButton.setAttribute('aria-label', 'Suara trailer aktif');
-        soundButton.querySelector('span').textContent = 'Trailer aktif';
-      } else {
-        window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank', 'noopener,noreferrer');
-      }
+      if (!frame || frame.querySelector('iframe')) return;
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?autoplay=1&start=${videoStart}&end=${Number(hero.dataset.end || videoStart + 5)}&playsinline=1&rel=0&modestbranding=1`;
+      iframe.title = 'Trailer resmi Sky: Children of the Light';
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      iframe.allowFullscreen = true;
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+      frame.append(iframe);
+      frame.setAttribute('aria-hidden', 'false');
+      hero.classList.add('is-ready', 'is-playing');
+      if (poster) poster.style.opacity = '0';
+      soundButton.setAttribute('aria-label', 'Trailer aktif');
+      soundButton.querySelector('span').textContent = 'Trailer aktif';
+      audio.fadeAmbient(0);
     });
   }
   function observeHero(target) {
     if (!('IntersectionObserver' in window)) return;
     const observer = new IntersectionObserver((entries) => {
       heroVisible = entries[0].isIntersecting;
-      if (heroPlayer) heroVisible && !document.hidden && !reducedMotion ? heroPlayer.playVideo() : heroPlayer.pauseVideo();
       if (localVideo) heroVisible && !document.hidden && !reducedMotion ? localVideo.play().catch(() => {}) : localVideo.pause();
     }, { threshold: 0.12 });
     observer.observe(target);
   }
   document.addEventListener('visibilitychange', () => {
-    if (heroPlayer) heroVisible && !document.hidden && !reducedMotion ? heroPlayer.playVideo() : heroPlayer.pauseVideo();
     if (localVideo) heroVisible && !document.hidden && !reducedMotion ? localVideo.play().catch(() => {}) : localVideo.pause();
   });
 }
 
 function setupMedia() {
   document.querySelectorAll('[data-media-frame] img, .gallery-item__image img, .hero-media__poster').forEach((image) => {
-    image.addEventListener('error', () => {
+    const handleImageError = () => {
       const stage = Number(image.dataset.fallbackStage || 0);
       const fallback = stage === 0 ? image.dataset.fallback : image.dataset.hqFallback;
       if (fallback && image.src !== new URL(fallback, location.href).href) {
@@ -709,7 +667,9 @@ function setupMedia() {
         image.alt = '';
         image.parentElement?.classList.add('has-placeholder');
       }
-    });
+    };
+    image.addEventListener('error', handleImageError);
+    if (image.complete && image.naturalWidth === 0) handleImageError();
   });
   document.addEventListener('click', (event) => {
     const link = event.target.closest('[data-load-youtube]');

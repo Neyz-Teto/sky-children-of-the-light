@@ -9,7 +9,7 @@ const {
   description = 'Sebuah ruang penggemar tentang Sky: Children of the Light, dunia, Spirit, dan kisah-kisahnya.',
   activePage = '',
   route = '',
-  ogImage = 'https://i.ytimg.com/vi/feOR2GZxs2s/maxresdefault.jpg',
+  ogImage = '',
 } = Astro.props;
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 const introMedia = media.find((item) => item.id === 'hero-video');
@@ -20,8 +20,10 @@ const introBackgroundPath = existsSync(new URL('../../public/media/intro/backgro
 const introCharacterPath = existsSync(new URL('../../public/media/intro/character.png', import.meta.url))
   ? `${base}media/intro/character.png`
   : existsSync(new URL('../../public/media/intro/character.webp', import.meta.url)) ? `${base}media/intro/character.webp` : '';
-const introPoster = introBackgroundPath || introPosterPath || introMedia?.introPoster || introMedia?.poster || '';
-const introPosterFallback = introMedia?.youtubeId ? `https://i.ytimg.com/vi/${introMedia.youtubeId}/hq1.jpg` : '';
+const introPosterAsset = introBackgroundPath || introPosterPath || introMedia?.introPoster || introMedia?.poster || '';
+const introPoster = introPosterAsset.startsWith('http') ? introPosterAsset : `${base}${introPosterAsset}`;
+const introPosterFallback = introMedia?.youtubeId ? `https://i.ytimg.com/vi/${introMedia.youtubeId}/hqdefault.jpg` : '';
+const socialImage = ogImage || (Astro.site ? new URL(`${base}media/posters/home-sky.jpg`, Astro.site).toString() : `${base}media/posters/home-sky.jpg`);
 const canonical = Astro.site ? new URL(`${base}${route}`, Astro.site).toString() : undefined;
 const repoUrl = import.meta.env.PUBLIC_REPO_URL || 'https://github.com/';
 const issuesUrl = `${repoUrl.replace(/\/$/, '')}/issues`;
@@ -45,12 +47,10 @@ const navItems = [
     <meta property="og:locale" content="id_ID" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={ogImage} />
+    <meta property="og:image" content={socialImage} />
     {canonical && <link rel="canonical" href={canonical} />}
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     {activePage === 'home' && introPoster && <link rel="preload" as="image" href={introPoster} fetchpriority="high" />}
-    <link rel="preconnect" href="https://i.ytimg.com" />
-    <link rel="preconnect" href="https://www.youtube-nocookie.com" />
     <title>{title}</title>
   </head>
   <body data-page={activePage}>
