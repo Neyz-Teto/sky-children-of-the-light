@@ -1,16 +1,27 @@
 ---
 import { existsSync } from 'node:fs';
+import mediaCatalog from '../data/media.json';
 const media = Astro.props.media;
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 const localHero = existsSync(new URL('../../public/media/hero/hero.mp4', import.meta.url));
-const poster = `https://i.ytimg.com/vi/${media.youtubeId}/maxresdefault.jpg`;
+const localIntro = existsSync(new URL('../../public/media/intro/intro.mp4', import.meta.url));
+const localIntroPoster = existsSync(new URL('../../public/media/intro/intro-poster.webp', import.meta.url)) ? `${base}media/intro/intro-poster.webp` : '';
+const introBackground = existsSync(new URL('../../public/media/intro/background.webp', import.meta.url)) ? `${base}media/intro/background.webp` : '';
+const posterVideoId = media.youtubeId;
+const poster = media.poster || `https://i.ytimg.com/vi/${media.youtubeId}/hq2.jpg`;
+const source = localIntro ? `${base}media/intro/intro.mp4` : `${base}${media.local}`;
+const videoStart = media.start ?? 42;
+const videoEnd = media.end ?? 66;
 ---
 
-{localHero ? (
-  <video class="hero-media__video" data-local-hero src={`${base}${media.local}`} poster={poster} muted loop playsinline preload="metadata" aria-label="Video latar Sky"></video>
+{localHero || localIntro ? (
+  <div class="hero-media" data-hero-local>
+    <img class="hero-media__poster" src={poster} data-fallback={`https://i.ytimg.com/vi/${posterVideoId}/hq1.jpg`} alt="" width="1280" height="720" fetchpriority="high" decoding="async" />
+    <video class="hero-media__video" data-local-hero src={source} poster={poster} autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
+  </div>
 ) : (
-  <div class="hero-media" data-hero-youtube data-youtube-id={media.youtubeId} data-poster={poster}>
-    <img class="hero-media__poster" src={poster} data-fallback={`https://i.ytimg.com/vi/${media.youtubeId}/hqdefault.jpg`} alt="" width="1280" height="720" fetchpriority="high" decoding="async" />
+  <div class="hero-media" data-hero-youtube data-youtube-id={media.youtubeId} data-poster={poster} data-start={videoStart} data-end={videoEnd}>
+    <img class="hero-media__poster" src={poster} data-fallback={`https://i.ytimg.com/vi/${posterVideoId}/hq1.jpg`} alt="" width="1280" height="720" fetchpriority="high" decoding="async" />
     <div class="hero-media__youtube" data-hero-frame aria-hidden="true"></div>
   </div>
 )}

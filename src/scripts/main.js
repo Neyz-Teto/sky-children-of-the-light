@@ -260,31 +260,138 @@ function setupNavigation() {
 
 function setupIntro() {
   const intro = document.querySelector('[data-intro]');
-  if (!intro || sessionStorage.getItem('skyIntroSeen') === 'yes') return;
+  if (!intro || pageName !== 'home') return;
+  const vintage = intro.querySelector('.vintage-overlay');
+  if (sessionStorage.getItem('skyIntroSeen') === 'yes') {
+    if (vintage) document.body.append(vintage);
+    return;
+  }
+  const root = document.documentElement;
+  const scrollY = window.scrollY;
+  const background = [...document.body.children].filter((element) => element !== intro).map((element) => ({
+    element,
+    inert: element.inert,
+    ariaHidden: element.getAttribute('aria-hidden'),
+  }));
+  background.forEach(({ element }) => { element.inert = true; element.setAttribute('aria-hidden', 'true'); });
+  root.classList.add('intro-lock');
   intro.hidden = false;
   intro.inert = false;
   intro.setAttribute('aria-hidden', 'false');
   document.body.classList.add('has-intro');
-  const finish = (withSound) => {
+  lenis?.stop();
+  let finished = false;
+  let videoPlaying = false;
+  let posterOnly = false;
+  let billowTimer = 0;
+  const soundButton = intro.querySelector('[data-intro-sound]');
+  const poster = intro.querySelector('[data-intro-poster]');
+  const posterLoader = intro.querySelector('[data-intro-loader]');
+  const onVideoPlaying = () => {
+    videoPlaying = true;
+    if (!posterOnly) intro.classList.add('has-video');
+  };
+  window.addEventListener('sky:hero-playing', onVideoPlaying);
+  const videoTimer = window.setTimeout(() => {
+    if (!videoPlaying) { posterOnly = true; intro.classList.add('poster-only'); }
+  }, 4000);
+  const loaderTimer = window.setTimeout(() => posterLoader?.classList.add('is-hidden'), 1200);
+  const loadFallback = () => {
+    if (!poster) return;
+    const fallback = poster.dataset.fallback;
+    if (fallback && poster.src !== new URL(fallback, location.href).href) {
+      poster.dataset.fallback = '';
+      poster.src = fallback;
+    } else {
+      poster.hidden = true;
+      intro.classList.add('poster-missing');
+    }
+  };
+  const verifyPoster = () => {
+    if (!poster) return;
+    if (poster.naturalWidth >= 300) intro.classList.add('poster-ready');
+    else loadFallback();
+  };
+  poster?.addEventListener('load', verifyPoster);
+  poster?.addEventListener('error', loadFallback);
+  if (poster?.complete) verifyPoster();
+  const finish = (withSound, skip = false) => {
+    if (finished) return;
+    finished = true;
+    if (vintage) document.body.append(vintage);
     sessionStorage.setItem('skyIntroSeen', 'yes');
     if (withSound) {
       audio.unlock(true);
       audio.click();
       updateSoundToggle();
     } else {
+      audio.setEnabled(false);
       sessionStorage.setItem('skyAmbient', 'off');
+      updateSoundToggle();
     }
+    if (skip) intro.classList.add('is-skipping');
     intro.classList.add('is-leaving');
+    const duration = reducedMotion ? 260 : skip ? 300 : 1500;
     window.setTimeout(() => {
+      window.clearTimeout(videoTimer);
+      window.clearTimeout(loaderTimer);
+      window.clearTimeout(billowTimer);
+      window.removeEventListener('sky:hero-playing', onVideoPlaying);
       intro.remove();
       document.body.classList.remove('has-intro');
+      root.classList.remove('intro-lock');
+      background.forEach(({ element, inert, ariaHidden }) => {
+        element.inert = inert;
+        if (ariaHidden === null) element.removeAttribute('aria-hidden');
+        else element.setAttribute('aria-hidden', ariaHidden);
+      });
+      lenis?.start();
+      if (window.scrollY !== scrollY) window.scrollTo(0, scrollY);
       document.body.classList.add('page-enter');
       window.setTimeout(() => document.body.classList.remove('page-enter'), 800);
-    }, reducedMotion ? 260 : 1550);
+    }, duration);
   };
-  intro.querySelector('[data-intro-sound]')?.addEventListener('click', () => finish(true), { once: true });
+  soundButton?.addEventListener('click', () => finish(true), { once: true });
   intro.querySelector('[data-intro-silent]')?.addEventListener('click', () => finish(false), { once: true });
-  intro.querySelector('[data-intro-skip]')?.addEventListener('click', () => finish(false), { once: true });
+  intro.querySelector('[data-intro-skip]')?.addEventListener('click', () => finish(false, true), { once: true });
+  intro.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') { event.preventDefault(); finish(false, true); return; }
+    if (event.key !== 'Tab') return;
+    const focusable = [...intro.querySelectorAll('button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])')].filter((element) => !element.hidden);
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+  });
+  intro.addEventListener('pointerover', (event) => {
+    if (event.pointerType !== 'touch' && event.target.closest('button')) intro.classList.add('is-hover-button');
+    if (event.pointerType !== 'touch' && event.target.closest('[data-intro-sound]')) intro.classList.add('is-candle-raised');
+  });
+  intro.addEventListener('pointerout', (event) => {
+    if (!event.relatedTarget?.closest?.('button')) intro.classList.remove('is-hover-button');
+    if (!event.relatedTarget?.closest?.('[data-intro-sound]')) intro.classList.remove('is-candle-raised');
+  });
+  intro.addEventListener('pointerdown', () => {
+    intro.classList.add('is-billowing');
+    window.clearTimeout(billowTimer);
+    billowTimer = window.setTimeout(() => intro.classList.remove('is-billowing'), 760);
+  }, { passive: true });
+  if (!reducedMotion && !coarsePointer) {
+    intro.addEventListener('pointermove', (event) => {
+      if (event.pointerType === 'touch') return;
+      const x = (event.clientX / window.innerWidth - .5) * 2;
+      const y = (event.clientY / window.innerHeight - .5) * 2;
+      intro.style.setProperty('--parallax-x', `${x * 14}px`);
+      intro.style.setProperty('--parallax-y', `${y * 9}px`);
+      intro.style.setProperty('--traveler-lean', `${x * 4}deg`);
+    }, { passive: true });
+  }
+  const pauseAtmosphere = () => {
+    intro.classList.toggle('is-paused', document.hidden);
+    document.documentElement.classList.toggle('is-page-hidden', document.hidden);
+  };
+  document.addEventListener('visibilitychange', pauseAtmosphere);
+  soundButton?.focus({ preventScroll: true });
 }
 
 function updateSoundToggle() {
@@ -496,10 +603,15 @@ function setupHero() {
   const hero = document.querySelector('[data-hero-youtube]');
   const soundButton = document.querySelector('[data-hero-sound]');
   if (localVideo) {
-    const play = () => { if (heroVisible) localVideo.play().catch(() => {}); };
+    const stage = localVideo.closest('[data-hero-local]');
+    const play = () => { if (heroVisible && !document.hidden && !reducedMotion) localVideo.play().catch(() => {}); };
+    localVideo.addEventListener('playing', () => {
+      stage?.classList.add('is-playing');
+      window.dispatchEvent(new Event('sky:hero-playing'));
+    });
     localVideo.addEventListener('error', () => { localVideo.hidden = true; }, { once: true });
     play();
-    observeHero(localVideo);
+    observeHero(stage || localVideo);
     soundButton?.addEventListener('click', () => {
       localVideo.muted = !localVideo.muted;
       localVideo.play().catch(() => {});
@@ -509,6 +621,8 @@ function setupHero() {
     });
   } else if (hero) {
     const videoId = hero.dataset.youtubeId;
+    const videoStart = Number(hero.dataset.start || 0);
+    const videoEnd = Number(hero.dataset.end || 0);
     const frame = hero.querySelector('[data-hero-frame]');
     const poster = hero.querySelector('.hero-media__poster');
     const loadApi = () => {
@@ -532,22 +646,24 @@ function setupHero() {
       if (!frame || !hero.isConnected) return;
       heroPlayer = new YT.Player(frame, {
         videoId,
-        playerVars: { autoplay: 1, controls: 0, disablekb: 1, fs: 0, loop: 1, playlist: videoId, playsinline: 1, rel: 0, modestbranding: 1, origin: location.origin },
+        playerVars: { autoplay: reducedMotion ? 0 : 1, controls: 0, disablekb: 1, fs: 0, loop: 1, playlist: videoId, playsinline: 1, rel: 0, modestbranding: 1, start: videoStart, end: videoEnd, origin: location.origin },
         events: {
           onReady: (event) => {
             event.target.mute();
             event.target.setVolume(0);
-            if (heroVisible) event.target.playVideo();
+            if (heroVisible && !document.hidden && !reducedMotion) event.target.playVideo();
             hero.classList.add('is-ready');
           },
           onStateChange: (event) => {
             if (event.data === YT.PlayerState.PLAYING) {
               hero.classList.add('is-playing');
               if (poster) poster.style.opacity = '0';
+              window.dispatchEvent(new Event('sky:hero-playing'));
               if (audio.enabled) audio.fadeAmbient(0);
             }
-            if (event.data === YT.PlayerState.ENDED) heroPlayer?.seekTo(0, true);
+            if (event.data === YT.PlayerState.ENDED) heroPlayer?.seekTo(videoStart, true);
           },
+          onError: () => window.dispatchEvent(new Event('sky:hero-error')),
         },
       });
     }).catch(() => {});
@@ -569,11 +685,15 @@ function setupHero() {
     if (!('IntersectionObserver' in window)) return;
     const observer = new IntersectionObserver((entries) => {
       heroVisible = entries[0].isIntersecting;
-      if (heroPlayer) heroVisible ? heroPlayer.playVideo() : heroPlayer.pauseVideo();
-      if (localVideo) heroVisible ? localVideo.play().catch(() => {}) : localVideo.pause();
+      if (heroPlayer) heroVisible && !document.hidden && !reducedMotion ? heroPlayer.playVideo() : heroPlayer.pauseVideo();
+      if (localVideo) heroVisible && !document.hidden && !reducedMotion ? localVideo.play().catch(() => {}) : localVideo.pause();
     }, { threshold: 0.12 });
     observer.observe(target);
   }
+  document.addEventListener('visibilitychange', () => {
+    if (heroPlayer) heroVisible && !document.hidden && !reducedMotion ? heroPlayer.playVideo() : heroPlayer.pauseVideo();
+    if (localVideo) heroVisible && !document.hidden && !reducedMotion ? localVideo.play().catch(() => {}) : localVideo.pause();
+  });
 }
 
 function setupMedia() {

@@ -1,5 +1,8 @@
 ---
 import '../styles/site.css';
+import { existsSync } from 'node:fs';
+import media from '../data/media.json';
+import VintageOverlay from '../components/VintageOverlay.astro';
 
 const {
   title = 'Sky — sebuah perjalanan cahaya',
@@ -9,6 +12,16 @@ const {
   ogImage = 'https://i.ytimg.com/vi/feOR2GZxs2s/maxresdefault.jpg',
 } = Astro.props;
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const introMedia = media.find((item) => item.id === 'hero-video');
+const introScene = media.find((item) => item.id === 'season-sanctuary' && item.status === 'verified') || introMedia;
+const introVideoPath = existsSync(new URL('../../public/media/intro/intro.mp4', import.meta.url)) ? `${base}media/intro/intro.mp4` : '';
+const introPosterPath = existsSync(new URL('../../public/media/intro/intro-poster.webp', import.meta.url)) ? `${base}media/intro/intro-poster.webp` : '';
+const introBackgroundPath = existsSync(new URL('../../public/media/intro/background.webp', import.meta.url)) ? `${base}media/intro/background.webp` : '';
+const introCharacterPath = existsSync(new URL('../../public/media/intro/character.png', import.meta.url))
+  ? `${base}media/intro/character.png`
+  : existsSync(new URL('../../public/media/intro/character.webp', import.meta.url)) ? `${base}media/intro/character.webp` : '';
+const introPoster = introBackgroundPath || introPosterPath || introMedia?.introPoster || introMedia?.poster || '';
+const introPosterFallback = introMedia?.youtubeId ? `https://i.ytimg.com/vi/${introMedia.youtubeId}/hq1.jpg` : '';
 const canonical = Astro.site ? new URL(`${base}${route}`, Astro.site).toString() : undefined;
 const repoUrl = import.meta.env.PUBLIC_REPO_URL || 'https://github.com/';
 const issuesUrl = `${repoUrl.replace(/\/$/, '')}/issues`;
@@ -35,6 +48,7 @@ const navItems = [
     <meta property="og:image" content={ogImage} />
     {canonical && <link rel="canonical" href={canonical} />}
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    {activePage === 'home' && introPoster && <link rel="preload" as="image" href={introPoster} fetchpriority="high" />}
     <link rel="preconnect" href="https://i.ytimg.com" />
     <link rel="preconnect" href="https://www.youtube-nocookie.com" />
     <title>{title}</title>
@@ -46,19 +60,59 @@ const navItems = [
     <canvas class="light-field" data-particles aria-hidden="true"></canvas>
     <div class="custom-cursor" data-cursor aria-hidden="true"><span data-cursor-dot></span><span data-cursor-ring></span><span class="cursor-label" data-cursor-label></span></div>
 
-    <section class="intro" data-intro aria-labelledby="intro-title" hidden inert>
-      <div class="intro__orb" aria-hidden="true"></div>
-      <div class="intro__content">
-        <p class="eyebrow">sebuah kisah tentang cahaya</p>
-        <h1 id="intro-title" class="intro__wordmark" aria-label="Sky"><span>S</span><span>k</span><span>y</span></h1>
-        <p class="intro__subline">Perjalanan terasa lebih indah saat dijalani bersama.</p>
-        <div class="intro__actions">
-          <button class="button button--light" type="button" data-intro-sound>Masuk dengan suara</button>
-          <button class="button button--quiet" type="button" data-intro-silent>Masuk tanpa suara</button>
+    {activePage === 'home' && (
+      <section class="intro" data-intro role="dialog" aria-modal="true" aria-labelledby="intro-title" aria-describedby="intro-description" aria-hidden="true" hidden inert>
+        <img class="intro__poster" data-intro-poster src={introPoster} data-fallback={introPosterFallback} alt="" aria-hidden="true" fetchpriority="high" decoding="async" />
+        <div class="intro__grade" aria-hidden="true"></div>
+        <VintageOverlay />
+        <div class="intro__text-shade" aria-hidden="true"></div>
+        <div class="intro__rays" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <svg class="intro__cloud intro__cloud--back" viewBox="0 0 1600 540" preserveAspectRatio="none" aria-hidden="true"><path d="M0 232c112-42 171-15 260-49 92-35 116-4 207-34 114-37 164 19 257-5 113-30 177-10 251-42 108-47 192 18 284-3 120-28 212 13 341-32v473H0Z" fill="#f5ead9" fill-opacity=".44"/><path d="M0 335c126-43 212-10 307-42 92-32 161 7 252-19 119-34 211 18 310-12 91-28 165 12 256-15 132-39 259 11 475-35v328H0Z" fill="#e9a9a0" fill-opacity=".3"/></svg>
+        <svg class="intro__cloud intro__cloud--middle" viewBox="0 0 1600 500" preserveAspectRatio="none" aria-hidden="true"><path d="M0 180c139-51 204-8 332-48 118-38 175 14 291-20 107-31 170 22 282-13 116-36 178 14 282-18 127-39 228 22 413-34v453H0Z" fill="#fbf3e4" fill-opacity=".55"/><path d="M0 307c112-32 217 8 323-24 105-31 207 5 303-24 136-42 208 22 331-5 119-26 204 24 315-13 115-37 221 8 328-30v289H0Z" fill="#d7d4dc" fill-opacity=".52"/></svg>
+        <svg class="intro__cloud intro__cloud--front" viewBox="0 0 1600 420" preserveAspectRatio="none" aria-hidden="true"><path d="M0 125c133-41 217-2 336-30 122-29 197 25 306-4 113-30 188 20 296-3 119-25 206 18 316-6 113-24 227 15 346-21v359H0Z" fill="#fbf3e4" fill-opacity=".7"/></svg>
+        <div class="intro__islands" aria-hidden="true">
+          <svg class="intro__island intro__island--far" viewBox="0 0 1600 500" preserveAspectRatio="none"><path d="M0 352c116-12 154-51 243-42 74 7 107-48 191-44 73 3 101-28 169-29 73-1 97-52 183-44 76 8 106 57 177 51 66-6 109-49 183-42 73 7 123-38 230-47 99-8 154 25 224-7v352H0Z"/><path d="M934 220c-8 70-2 120-20 183" class="intro__waterfall"/></svg>
+          <svg class="intro__island intro__island--mid" viewBox="0 0 1600 500" preserveAspectRatio="none"><path d="M0 397c135-21 191-4 272-36 77-31 132-8 218-28 90-21 152-5 224-42 74-39 157-19 223-44 77-29 139-6 215-29 90-27 156-2 248-34 83-29 134-8 200-24v340H0Z"/><path d="M1150 270c-13 57-8 95-26 151" class="intro__waterfall"/></svg>
+          <svg class="intro__island intro__island--near" viewBox="0 0 1600 500" preserveAspectRatio="none"><path d="M0 436c119-24 218-1 309-29 80-24 151-2 236-31 95-32 158-6 252-34 88-26 166-13 245-39 91-31 169-5 244-34 98-37 202-17 314-49v280H0Z"/></svg>
         </div>
-        <button class="intro__skip" type="button" data-intro-skip>Lewati</button>
-      </div>
-    </section>
+        <div class="intro__wind" aria-hidden="true"><svg viewBox="0 0 1600 900" preserveAspectRatio="none"><path d="M-80 520C260 370 405 695 740 510s510-160 940 10"/><path d="M-70 605C220 484 440 740 760 600s535-190 960-26"/><path d="M260 300c270-90 380 165 650 40s420-82 820 50"/></svg></div>
+        <div class="intro__mist" aria-hidden="true"></div>
+        <div class="intro__cliff" aria-hidden="true"><svg viewBox="0 0 880 360" preserveAspectRatio="none"><path d="M0 360c57-40 98-53 141-83 57-40 94-44 143-96 47-49 102-54 162-47 39 5 63-13 104-36 41-23 92-20 130 10 42 33 55 68 99 85 35 13 65 11 101 40v127Z" fill="#1b1f3f" fill-opacity=".84"/><path d="M188 252c71-44 109-98 155-118 52-22 108-21 144-8" fill="none" stroke="#f6d3b3" stroke-opacity=".32" stroke-width="3"/></svg></div>
+        <div class="intro__motes" aria-hidden="true"><i style="--mote-x:5%;--mote-delay:-2s;--mote-duration:12s;--mote-size:4px"></i><i style="--mote-x:14%;--mote-delay:-8s;--mote-duration:10s;--mote-size:3px"></i><i style="--mote-x:24%;--mote-delay:-5s;--mote-duration:14s;--mote-size:5px"></i><i style="--mote-x:36%;--mote-delay:-10s;--mote-duration:11s;--mote-size:3px"></i><i style="--mote-x:48%;--mote-delay:-1s;--mote-duration:13s;--mote-size:4px"></i><i style="--mote-x:59%;--mote-delay:-7s;--mote-duration:9s;--mote-size:3px"></i><i style="--mote-x:68%;--mote-delay:-4s;--mote-duration:12s;--mote-size:5px"></i><i style="--mote-x:77%;--mote-delay:-9s;--mote-duration:10s;--mote-size:3px"></i><i style="--mote-x:85%;--mote-delay:-3s;--mote-duration:14s;--mote-size:4px"></i><i style="--mote-x:94%;--mote-delay:-11s;--mote-duration:11s;--mote-size:3px"></i><i style="--mote-x:31%;--mote-delay:-12s;--mote-duration:13s;--mote-size:3px"></i><i style="--mote-x:72%;--mote-delay:-6s;--mote-duration:9s;--mote-size:4px"></i></div>
+        <div class="intro__traveler" data-intro-traveler aria-hidden="true">
+          {introCharacterPath ? <img class="intro__character-asset" src={introCharacterPath} alt="" decoding="async" /> : (
+            <svg class="intro__character" viewBox="0 0 240 320">
+              <defs><radialGradient id="traveler-glow"><stop stop-color="#fff0b5" stop-opacity=".9"/><stop offset="1" stop-color="#f2c66d" stop-opacity="0"/></radialGradient><linearGradient id="traveler-cape-under" x1=".15" y1="0" x2=".85" y2="1"><stop stop-color="#f8dfc4"/><stop offset=".55" stop-color="#d88d93"/><stop offset="1" stop-color="#ae758e"/></linearGradient><linearGradient id="traveler-cape-rose" x1=".2" y1="0" x2=".8" y2="1"><stop stop-color="#fbf3e4"/><stop offset=".57" stop-color="#efc3b7"/><stop offset="1" stop-color="#d99193"/></linearGradient></defs>
+              <ellipse class="traveler__shadow" cx="120" cy="307" rx="47" ry="9" fill="#1b1f3f" fill-opacity=".5"/>
+              <path class="traveler__rock" d="M50 302c14-10 26-9 38-4 17-13 36-14 54-3 14-7 32-5 48 7l-4 8H53Z" fill="#343852"/>
+              <g class="traveler__body">
+                <g class="traveler__cape-layer traveler__cape-layer--under"><path d="M99 138C73 159 63 188 62 217c-1 23-17 51-33 69 16 5 31 1 45-10l12 17 13-16 16 19 13-19 17 18 13-21 17 19 9-20c17 9 33 10 48 2-19-24-31-49-31-77 1-28-11-51-36-60Z" fill="url(#traveler-cape-under)" stroke="#f9d58e" stroke-opacity=".82" stroke-width="3" stroke-linejoin="round"/></g>
+                <g class="traveler__cape-layer traveler__cape-layer--rose"><path d="M106 142c-19 21-27 45-28 72-1 25-11 44-23 61 18-2 31-9 43-21l12 19 13-17 15 17 12-20 17 17 8-20c11 10 23 15 38 16-15-21-23-44-22-69 1-26-9-45-34-55Z" fill="url(#traveler-cape-rose)" fill-opacity=".9" stroke="#fff2d9" stroke-opacity=".74" stroke-width="2.5" stroke-linejoin="round"/></g>
+                <g class="traveler__cape-layer traveler__cape-layer--inner"><path d="M111 145c-13 23-18 43-18 65 0 22-6 40-16 57 14-5 25-13 34-26l10 18 11-17 14 17 10-20 16 17 6-20c8 10 17 15 29 18-12-22-17-40-16-63 1-24-8-39-31-47Z" fill="#e7a99f" fill-opacity=".83" stroke="#ffe7c4" stroke-opacity=".48" stroke-width="2" stroke-linejoin="round"/></g>
+                <path class="traveler__arm" d="M104 164c-18 11-28 26-32 44m64-44c17 11 27 24 31 39" fill="none" stroke="#c9988f" stroke-width="12" stroke-linecap="round"/>
+                <path class="traveler__legs" d="M104 258v35m31-35v35" stroke="#e8c8b1" stroke-width="13" stroke-linecap="round"/>
+                <path d="M96 291h17m15 0h16" stroke="#fbf3e4" stroke-width="7" stroke-linecap="round"/>
+                <path class="traveler__torso" d="M103 144c4-13 12-20 21-20s18 7 22 20l4 36-24 15-28-15Z" fill="#c8a895" stroke="#fbf3e4" stroke-opacity=".54" stroke-width="3"/>
+                <g class="traveler__head"><ellipse cx="123" cy="88" rx="42" ry="48" fill="#f1d4bd" stroke="#fff0d8" stroke-width="4"/><path d="M82 91c-4-25 4-53 23-62 14-8 34-4 45 8 12 13 17 31 13 52-8-13-17-19-29-20-20-2-34 11-52 22Z" fill="#d9bda8" stroke="#f9e6d3" stroke-width="4" stroke-linejoin="round"/><path d="M147 42c17-8 31 1 30 16-1 10-12 17-28 15" fill="#d5b69f" stroke="#f9e6d3" stroke-width="3" stroke-linecap="round"/></g>
+                <g class="traveler__candle"><circle class="traveler__glow" cx="177" cy="197" r="47" fill="url(#traveler-glow)"/><path d="M177 203v-27" stroke="#fff3d4" stroke-width="4" stroke-linecap="round"/><path d="M177 176c-9-8-4-18 1-24 7 8 10 16 3 24Z" fill="#f5cf78"/><circle class="intro__burst" cx="177" cy="197" r="61" fill="none" stroke="#fff0b5" stroke-opacity="0" stroke-width="3"/></g>
+              </g>
+            </svg>
+          )}
+        </div>
+        <div class="intro__loading" data-intro-loader aria-hidden="true"><i></i></div>
+        <div class="intro__content">
+          <p class="intro__eyebrow">Sebuah kisah tentang cahaya</p>
+          <span class="intro__orb" aria-hidden="true"></span>
+          <h1 id="intro-title" class="intro__wordmark" aria-label="Sky"><span>S</span><span>k</span><span>y</span></h1>
+          <p class="intro__subline" id="intro-description">Terbang perlahan. Temukan jalan pulang ke cahaya.</p>
+          <div class="intro__actions">
+            <button class="button button--light" type="button" data-intro-sound>Masuk dengan suara</button>
+            <button class="button button--quiet" type="button" data-intro-silent>Masuk tanpa suara</button>
+          </div>
+          <button class="intro__skip" type="button" data-intro-skip>Lewati</button>
+        </div>
+      </section>
+    )}
 
     <header class="site-header" data-header>
       <a class="wordmark" href={`${base}`} aria-label="Sky — kembali ke Beranda"><span class="wordmark__wing" aria-hidden="true"><svg viewBox="0 0 32 20"><path d="M16 10C12 4 6 3 2 5c3 1 6 3 8 6-3-1-6 0-8 2 5-.5 9 1 13 5 4-4 8-5.5 13-5-2-2-5-3-8-2 2-3 5-5 8-6-4-2-10-1-14 5Z"/></svg></span>Sky</a>

@@ -46,6 +46,12 @@ Press kit tertaut dari situs resmi thatgamecompany, tetapi halaman yang tersedia
 
 ## Menambahkan gambar sendiri
 
+## Aset intro buatan sendiri
+- `public/media/intro/intro.mp4` — MP4/H.264, 1080p, loop muted, disarankan di bawah 8 MB.
+- `public/media/intro/intro-poster.webp` — poster intro/hero bila video lokal dipakai.
+- `public/media/intro/character.png` atau `character.webp` — transparan, tinggi sekitar 1200 px, di bawah 300 KB.
+- `public/media/intro/background.webp` — poster alternatif 1920 × 1080, disarankan di bawah 400 KB.
+
 Gunakan nama file tepat seperti tabel dan letakkan di folder yang disebutkan. Tidak perlu mengubah kode. Format WebP atau AVIF disarankan, lebar maksimum 2000 px, ukuran sebaiknya di bawah 400 KB. Slot lokal dicoba lebih dulu; jika file tidak ditemukan, situs kembali ke thumbnail resmi atau placeholder senja.
 
 Untuk mengganti video hero, letakkan rekaman milikmu di `public/media/hero/hero.mp4`. Gunakan MP4/H.264, maksimum 1080p, kompres hingga di bawah sekitar 8 MB. HandBrake: preset Fast 1080p30, format MP4, Video Encoder H.264 (x264), dan aktifkan Web Optimized. File akan muted, loop, inline, memakai poster YouTube sebagai cadangan, dan berhenti saat hero tidak terlihat.
