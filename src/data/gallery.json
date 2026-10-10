@@ -1,0 +1,10 @@
+[
+  { "title": "Pagi pertama", "label": "Isle of Dawn", "mediaId": "gallery-isle", "filter": "realms", "shape": "tall" },
+  { "title": "Ruang untuk terbang", "label": "Daylight Prairie", "mediaId": "gallery-prairie", "filter": "realms", "shape": "wide" },
+  { "title": "Rumah di antara pepohonan", "label": "Hidden Forest", "mediaId": "gallery-forest", "filter": "realms", "shape": "square" },
+  { "title": "Meluncur bersama", "label": "Valley of Triumph", "mediaId": "gallery-valley", "filter": "realms", "shape": "wide" },
+  { "title": "Cahaya di kedalaman", "label": "Golden Wasteland", "mediaId": "gallery-wasteland", "filter": "realms", "shape": "tall" },
+  { "title": "Cerita dalam bintang", "label": "Vault of Knowledge", "mediaId": "gallery-vault", "filter": "spirits", "shape": "square" },
+  { "title": "Musim yang berubah", "label": "Season of Flight", "mediaId": "gallery-seasons", "filter": "spirits", "shape": "tall" },
+  { "title": "Sky di Steam", "label": "Video resmi", "mediaId": "gallery-video", "filter": "video", "shape": "wide" }
+]

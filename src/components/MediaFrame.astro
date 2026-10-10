@@ -1,0 +1,45 @@
+---
+const { media, className = '', caption = '', eager = false, fit = 'cover', interactive = true, parallax = false } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const localPath = media.local ? `${base}${media.local}` : '';
+const fallbackPath = media.poster?.startsWith('http') ? media.poster : `${base}${media.poster || 'media/placeholder.svg'}`;
+const hasVideo = media.status === 'verified' && Boolean(media.youtubeId);
+const hqFallback = media.youtubeId ? `https://i.ytimg.com/vi/${media.youtubeId}/hqdefault.jpg` : '';
+const watchUrl = hasVideo ? `https://www.youtube.com/watch?v=${media.youtubeId}` : '';
+---
+
+<figure
+  class={`media-frame ${className}`}
+  data-media-frame
+  data-media-id={media.id}
+  data-youtube-id={hasVideo && interactive ? media.youtubeId : ''}
+  data-watch-url={hasVideo && interactive ? watchUrl : ''}
+  data-fit={fit}
+  data-parallax={parallax ? '' : undefined}
+>
+  <div class="media-frame__image">
+    <img
+      src={localPath || fallbackPath}
+      data-fallback={fallbackPath}
+      data-hq-fallback={hqFallback}
+      alt={media.alt}
+      width="1280"
+      height="720"
+      loading={eager ? 'eager' : 'lazy'}
+      fetchpriority={eager ? 'high' : 'auto'}
+      decoding="async"
+    />
+    <div class="media-frame__wash" aria-hidden="true"></div>
+    {hasVideo ? (
+      interactive ? (
+        <a class="media-frame__play" href={watchUrl} data-load-youtube aria-label={`Putar video: ${caption || media.section}`}>
+          <span class="play-mark" aria-hidden="true"></span>
+          <span class="media-frame__play-label">Putar video</span>
+        </a>
+      ) : null
+    ) : (
+      <span class="media-frame__placeholder-label">Visual menyusul</span>
+    )}
+  </div>
+  {caption && <figcaption class="media-frame__caption">{caption}</figcaption>}
+</figure>

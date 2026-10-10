@@ -1,0 +1,16 @@
+---
+import { existsSync } from 'node:fs';
+const media = Astro.props.media;
+const base = import.meta.env.BASE_URL;
+const localHero = existsSync(new URL('../../public/media/hero/hero.mp4', import.meta.url));
+const poster = `https://i.ytimg.com/vi/${media.youtubeId}/maxresdefault.jpg`;
+---
+
+{localHero ? (
+  <video class="hero-media__video" data-local-hero src={`${base}${media.local}`} poster={poster} muted loop playsinline preload="metadata" aria-label="Video latar Sky"></video>
+) : (
+  <div class="hero-media" data-hero-youtube data-youtube-id={media.youtubeId} data-poster={poster}>
+    <img class="hero-media__poster" src={poster} data-fallback={`https://i.ytimg.com/vi/${media.youtubeId}/hqdefault.jpg`} alt="" width="1280" height="720" fetchpriority="high" decoding="async" />
+    <div class="hero-media__youtube" data-hero-frame aria-hidden="true"></div>
+  </div>
+)}

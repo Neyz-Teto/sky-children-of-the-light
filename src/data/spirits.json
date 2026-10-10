@@ -1,0 +1,60 @@
+{
+  "types": [
+    {
+      "name": "Regular Spirit",
+      "eyebrow": "Jejak lama",
+      "description": "Spirit yang ditemui di sepanjang perjalanan membawa emote dan kenangan dari kerajaan yang pernah mereka huni.",
+      "mediaId": "spirit-regular"
+    },
+    {
+      "name": "Seasonal Spirit",
+      "eyebrow": "Musim yang singgah",
+      "description": "Season menghadirkan kisah, ekspresi, dan perjalanan baru untuk dikenang bersama.",
+      "mediaId": "spirit-seasonal"
+    },
+    {
+      "name": "Elder",
+      "eyebrow": "Penjaga konstelasi",
+      "description": "Elder menjadi bagian dari kisah setiap Realm dan menandai perjalanan yang telah ditempuh.",
+      "mediaId": "spirit-elder"
+    },
+    {
+      "name": "Guide",
+      "eyebrow": "Penunjuk cerita",
+      "description": "Season Guide mempertemukan para pengembara dengan misi dan kenangan di sebuah Season.",
+      "mediaId": "spirit-guide"
+    }
+  ],
+  "seasons": [
+    {
+      "name": "Season of Prophecy",
+      "description": "Menyingkap asal-usul para penghuni Sky melalui area baru di Isle of Dawn.",
+      "mediaId": "season-prophecy"
+    },
+    {
+      "name": "Season of Sanctuary",
+      "description": "Membawa suasana liburan ke Sanctuary Islands di Daylight Prairie.",
+      "mediaId": "season-sanctuary"
+    },
+    {
+      "name": "Season of Assembly",
+      "description": "Mengajak para Scout membangun kembali sebuah Treehouse yang terbengkalai.",
+      "mediaId": "season-assembly"
+    },
+    {
+      "name": "Season of Dreams",
+      "description": "Mengikuti seorang skater muda yang berlatih untuk tampil di arena Valley.",
+      "mediaId": "season-dreams"
+    },
+    {
+      "name": "Season of Abyss",
+      "description": "Sekelompok Spirit menyelam untuk mengungkap misteri laut Sky.",
+      "mediaId": "season-abyss"
+    },
+    {
+      "name": "Season of Remembrance",
+      "description": "Mengundang kita mendengarkan cerita para Spirit dan melangkah maju bersama.",
+      "mediaId": "season-remembrance"
+    }
+  ]
+}

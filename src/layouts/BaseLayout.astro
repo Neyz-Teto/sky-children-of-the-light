@@ -1,0 +1,118 @@
+---
+import '../styles/site.css';
+
+const {
+  title = 'Sky — sebuah perjalanan cahaya',
+  description = 'Sebuah ruang penggemar tentang Sky: Children of the Light, dunia, Spirit, dan kisah-kisahnya.',
+  activePage = '',
+  route = '',
+  ogImage = 'https://i.ytimg.com/vi/feOR2GZxs2s/maxresdefault.jpg',
+} = Astro.props;
+const base = import.meta.env.BASE_URL;
+const canonical = Astro.site ? new URL(`${base}${route}`, Astro.site).toString() : undefined;
+const repoUrl = import.meta.env.PUBLIC_REPO_URL || 'https://github.com/';
+const issuesUrl = `${repoUrl.replace(/\/$/, '')}/issues`;
+const navItems = [
+  { label: 'Beranda', path: '', key: 'home' },
+  { label: 'Realm', path: 'realms/', key: 'realms' },
+  { label: 'Spirit & Season', path: 'spirits/', key: 'spirits' },
+  { label: 'Fakta', path: 'fun-facts/', key: 'facts' },
+  { label: 'Galeri', path: 'gallery/', key: 'gallery' },
+];
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1b1f3f" />
+    <meta name="description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="id_ID" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <link rel="preconnect" href="https://i.ytimg.com" />
+    <link rel="preconnect" href="https://www.youtube-nocookie.com" />
+    <title>{title}</title>
+  </head>
+  <body data-page={activePage}>
+    <a class="skip-link" href="#main-content">Lewati ke konten</a>
+    <div class="page-wash" data-page-wash aria-hidden="true"></div>
+    <div class="scroll-progress" data-scroll-progress aria-hidden="true"></div>
+    <canvas class="light-field" data-particles aria-hidden="true"></canvas>
+    <div class="custom-cursor" data-cursor aria-hidden="true"><span data-cursor-dot></span><span data-cursor-ring></span><span class="cursor-label" data-cursor-label></span></div>
+
+    <section class="intro" data-intro aria-labelledby="intro-title" hidden inert>
+      <div class="intro__orb" aria-hidden="true"></div>
+      <div class="intro__content">
+        <p class="eyebrow">sebuah kisah tentang cahaya</p>
+        <h1 id="intro-title" class="intro__wordmark" aria-label="Sky"><span>S</span><span>k</span><span>y</span></h1>
+        <p class="intro__subline">Perjalanan terasa lebih indah saat dijalani bersama.</p>
+        <div class="intro__actions">
+          <button class="button button--light" type="button" data-intro-sound>Masuk dengan suara</button>
+          <button class="button button--quiet" type="button" data-intro-silent>Masuk tanpa suara</button>
+        </div>
+        <button class="intro__skip" type="button" data-intro-skip>Lewati</button>
+      </div>
+    </section>
+
+    <header class="site-header" data-header>
+      <a class="wordmark" href={`${base}`} aria-label="Sky — kembali ke Beranda"><span class="wordmark__wing" aria-hidden="true"><svg viewBox="0 0 32 20"><path d="M16 10C12 4 6 3 2 5c3 1 6 3 8 6-3-1-6 0-8 2 5-.5 9 1 13 5 4-4 8-5.5 13-5-2-2-5-3-8-2 2-3 5-5 8-6-4-2-10-1-14 5Z"/></svg></span>Sky</a>
+      <nav class="desktop-nav" aria-label="Navigasi utama">
+        {navItems.map((item) => (
+          <a href={`${base}${item.path}`} aria-current={activePage === item.key ? 'page' : undefined} class="nav-link">
+            <span>{item.label}</span><i aria-hidden="true"></i>
+          </a>
+        ))}
+      </nav>
+      <button class="sound-toggle" type="button" data-sound-toggle aria-pressed="false" aria-label="Nyalakan suara">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path class="sound-wave" d="M16 9a5 5 0 0 1 0 6m2-9a9 9 0 0 1 0 12"/></svg>
+      </button>
+      <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-navigation" aria-label="Buka menu">
+        <span></span><span></span>
+      </button>
+    </header>
+    <nav class="mobile-nav" id="mobile-navigation" data-mobile-menu aria-label="Navigasi seluler" inert>
+      <div class="mobile-nav__links">
+        {navItems.map((item, index) => (
+          <a href={`${base}${item.path}`} aria-current={activePage === item.key ? 'page' : undefined} class="mobile-nav__link">
+            <small>0{index + 1}</small>{item.label}
+          </a>
+        ))}
+      </div>
+      <p>Langkah kecil, dunia yang luas.</p>
+    </nav>
+
+    <main id="main-content" tabindex="-1">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-top">
+        <a class="wordmark wordmark--footer" href={`${base}`} aria-label="Sky — kembali ke Beranda"><span class="wordmark__wing" aria-hidden="true"><svg viewBox="0 0 32 20"><path d="M16 10C12 4 6 3 2 5c3 1 6 3 8 6-3-1-6 0-8 2 5-.5 9 1 13 5 4-4 8-5.5 13-5-2-2-5-3-8-2 2-3 5-5 8-6-4-2-10-1-14 5Z"/></svg></span>Sky</a>
+        <p>Situs penggemar tidak resmi. Tidak berafiliasi dengan thatgamecompany. Sky: Children of the Light dan seluruh materi visualnya adalah milik pemiliknya.</p>
+        <a class="footer-official" href="https://www.youtube.com/@thatskygame" target="_blank" rel="noopener noreferrer">Kanal resmi <span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="footer-bottom">
+        <span>Disusun dengan rasa ingin tahu dan cahaya.</span>
+        <div><a href={repoUrl} target="_blank" rel="noopener noreferrer">Repositori GitHub</a><a href={issuesUrl} target="_blank" rel="noopener noreferrer">Permintaan penghapusan</a></div>
+      </div>
+    </footer>
+
+    <dialog class="lightbox" data-lightbox aria-label="Pratinjau media">
+      <button class="lightbox__close" type="button" data-lightbox-close aria-label="Tutup pratinjau">×</button>
+      <button class="lightbox__step lightbox__step--prev" type="button" data-lightbox-prev aria-label="Item sebelumnya">←</button>
+      <div class="lightbox__body" data-lightbox-body></div>
+      <button class="lightbox__step lightbox__step--next" type="button" data-lightbox-next aria-label="Item berikutnya">→</button>
+      <p class="lightbox__caption" data-lightbox-caption></p>
+    </dialog>
+
+    <script>
+      import '../scripts/main.js';
+    </script>
+  </body>
+</html>

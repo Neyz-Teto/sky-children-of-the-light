@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MediaFrame from '../components/MediaFrame.astro';
+import spirits from '../data/spirits.json';
+import media from '../data/media.json';
+
+const base = import.meta.env.BASE_URL;
+const slots = Object.fromEntries(media.map((item) => [item.id, item]));
+---
+
+<BaseLayout title="Spirit & Season — Sky" description="Kenali Spirit dan Season yang menjaga cerita di dunia Sky: Children of the Light." activePage="spirits" route="spirits/">
+  <section class="page-intro page-intro--spirits" aria-labelledby="page-title">
+    <div class="page-intro__number" aria-hidden="true">S—S</div>
+    <div class="page-intro__copy">
+      <p class="eyebrow" data-reveal>INGATAN YANG MENYALA</p>
+      <h1 id="page-title" class="display-title" data-reveal>Jejak Spirit,<br /><em>musim yang singgah.</em></h1>
+      <p data-reveal>Setiap pertemuan menyimpan cerita. Ada yang telah lama tinggal, ada pula yang datang bersama angin musim baru.</p>
+    </div>
+    <a class="scroll-cue" href="#spirit-types"><span>Kenali para Spirit</span><i aria-hidden="true">↓</i></a>
+  </section>
+
+  <section id="spirit-types" class="spirit-types section-shell" aria-labelledby="spirit-title">
+    <div class="section-heading-row" data-reveal><div><p class="eyebrow">EMPAT JALAN KENANGAN</p><h2 id="spirit-title" class="section-title">Mereka yang <em>meninggalkan cahaya.</em></h2></div><span class="section-side-note">01 / Spirit</span></div>
+    <div class="spirit-type-list">
+      {spirits.types.map((spirit, index) => (
+        <article class={`spirit-type spirit-type--${index + 1}`} data-reveal>
+          <div class="spirit-type__number">0{index + 1}</div>
+          <div class="spirit-type__copy"><p class="eyebrow">{spirit.eyebrow}</p><h3>{spirit.name}</h3><p>{spirit.description}</p></div>
+          <div class="spirit-type__media"><MediaFrame media={slots[spirit.mediaId]} caption={spirit.name} /></div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="seasons-section" aria-labelledby="seasons-title">
+    <div class="section-shell seasons-heading" data-reveal><p class="eyebrow">WAKTU YANG BERUBAH</p><h2 id="seasons-title" class="section-title">Setiap Season membuka <em>halaman baru.</em></h2><p>Beberapa kisah pilihan dari arsip petualangan Sky. Geser untuk melihat Season berikutnya.</p></div>
+    <div class="season-list section-shell">
+      {spirits.seasons.map((season, index) => (
+        <article class={`season-item ${index % 2 ? 'season-item--reverse' : ''}`} data-reveal>
+          <div class="season-item__media"><MediaFrame media={slots[season.mediaId]} caption={season.name} parallax={true} /></div>
+          <div class="season-item__copy"><span class="season-item__index">0{index + 1}</span><h3>{season.name}</h3><p>{season.description}</p><a class="text-link" href={slots[season.mediaId].sourceUrl} target="_blank" rel="noopener noreferrer">Buka video resmi <span aria-hidden="true">↗</span></a></div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="next-page section-shell" aria-label="Lanjutkan perjalanan">
+    <div><p class="eyebrow">SELANJUTNYA</p><h2 class="section-title">Sepuluh cerita <em>kecil.</em></h2></div>
+    <a class="next-page__link" href={`${base}fun-facts/`} data-transition><span>Fakta</span><b aria-hidden="true">↗</b></a>
+  </section>
+</BaseLayout>

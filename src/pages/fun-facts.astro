@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MediaFrame from '../components/MediaFrame.astro';
+import facts from '../data/facts.json';
+import media from '../data/media.json';
+
+const base = import.meta.env.BASE_URL;
+const slots = Object.fromEntries(media.map((item) => [item.id, item]));
+---
+
+<BaseLayout title="Sepuluh Fakta — Sky" description="Sepuluh cerita tentang Sky: Children of the Light dari halaman resmi dan kanal thatgamecompany." activePage="facts" route="fun-facts/">
+  <section class="page-intro page-intro--facts" aria-labelledby="page-title">
+    <div class="page-intro__number" aria-hidden="true">10</div>
+    <div class="page-intro__copy">
+      <p class="eyebrow" data-reveal>CATATAN DI SEPANJANG JALAN</p>
+      <h1 id="page-title" class="display-title" data-reveal>Hal kecil yang<br /><em>menerangi dunia.</em></h1>
+      <p data-reveal>Sepuluh cerita pilihan dari sumber resmi. Satu kalimat, satu jejak cahaya.</p>
+    </div>
+    <a class="scroll-cue" href="#fact-01"><span>Buka cerita pertama</span><i aria-hidden="true">↓</i></a>
+  </section>
+
+  <div class="fact-scenes">
+    {facts.map((fact, index) => (
+      <article id={`fact-${fact.number}`} class={`fact-scene ${index % 2 ? 'fact-scene--reverse' : ''}`} data-reveal>
+        <span class="fact-scene__number" aria-hidden="true">{fact.number}</span>
+        <div class="fact-scene__media"><MediaFrame media={slots[fact.mediaId]} caption={`Fakta ${fact.number}`} eager={index === 0} /></div>
+        <div class="fact-scene__copy"><p class="eyebrow">FAKTA {fact.number} / 10</p><h2>{fact.text}</h2><a class="fact-source" href={fact.sourceUrl} target="_blank" rel="noopener noreferrer">{fact.sourceLabel} <span aria-hidden="true">↗</span></a></div>
+      </article>
+    ))}
+  </div>
+
+  <section class="next-page section-shell" aria-label="Lanjutkan perjalanan">
+    <div><p class="eyebrow">SELANJUTNYA</p><h2 class="section-title">Simpan momen <em>favoritmu.</em></h2></div>
+    <a class="next-page__link" href={`${base}gallery/`} data-transition><span>Galeri</span><b aria-hidden="true">↗</b></a>
+  </section>
+</BaseLayout>

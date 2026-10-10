@@ -1,0 +1,62 @@
+[
+  {
+    "id": "isle-of-dawn",
+    "number": "01",
+    "name": "Isle of Dawn",
+    "mood": "Awal yang hening",
+    "tone": "#ead2ad",
+    "description": "Perjalanan dimulai di tepian pasir dan reruntuhan yang baru bangun. Ikuti jejak cahaya, lalu lihat dunia terbuka perlahan di balik bukit-bukitnya.",
+    "mediaId": "realm-isle-of-dawn",
+    "sourceNote": "Season of Prophecy memperluas area di Isle of Dawn."
+  },
+  {
+    "id": "daylight-prairie",
+    "number": "02",
+    "name": "Daylight Prairie",
+    "mood": "Cahaya yang lapang",
+    "tone": "#e7c79d",
+    "description": "Lembah rumput terbuka, pulau-pulau melayang, dan kawanan manta menyambut langkah berikutnya. Di sini perjalanan terasa lebih ringan saat ditempuh bersama.",
+    "mediaId": "realm-daylight-prairie",
+    "sourceNote": "Trailer Sanctuary menyebut Sanctuary Islands berada di Daylight Prairie."
+  },
+  {
+    "id": "hidden-forest",
+    "number": "03",
+    "name": "Hidden Forest",
+    "mood": "Teduh setelah hujan",
+    "tone": "#80968a",
+    "description": "Hujan lembut turun di antara pepohonan tua dan jembatan batu. Api kecil menjadi tempat bernaung, sementara cahaya menuntun jalan di antara kabut.",
+    "mediaId": "realm-hidden-forest",
+    "sourceNote": "Season of Assembly berkisah tentang membangun kembali Treehouse."
+  },
+  {
+    "id": "valley-of-triumph",
+    "number": "04",
+    "name": "Valley of Triumph",
+    "mood": "Laju dan gemerlap",
+    "tone": "#b8a8b4",
+    "description": "Lereng bersalju membawa kita meluncur menuju arena yang luas. Angin terasa cepat, tetapi momen terbaik sering hadir ketika kita menunggu teman.",
+    "mediaId": "realm-valley-of-triumph",
+    "sourceNote": "Season of Dreams berlangsung di area baru Valley of Triumph."
+  },
+  {
+    "id": "golden-wasteland",
+    "number": "05",
+    "name": "Golden Wasteland",
+    "mood": "Berani dalam senyap",
+    "tone": "#a68877",
+    "description": "Di balik pasir gelap, cahaya tetap terasa berharga. Jelajahi reruntuhan dengan hati-hati dan tetap dekat dengan kawan seperjalanan.",
+    "mediaId": "realm-golden-wasteland",
+    "sourceNote": "Season of Abyss membawa petualangan bawah air ke area baru di Golden Wasteland."
+  },
+  {
+    "id": "vault-of-knowledge",
+    "number": "06",
+    "name": "Vault of Knowledge",
+    "mood": "Malam penuh cerita",
+    "tone": "#747d9b",
+    "description": "Tangga berlapis mengangkat perjalanan menuju ruang yang tenang dan luas. Setiap bintang terasa seperti cerita yang menunggu untuk ditemukan.",
+    "mediaId": "realm-vault-of-knowledge",
+    "sourceNote": "Belum ditemukan trailer resmi yang dapat diverifikasi khusus untuk Realm ini; slot media menunggu sumber."
+  }
+]

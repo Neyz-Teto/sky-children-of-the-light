@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MediaFrame from '../components/MediaFrame.astro';
+import realms from '../data/realms.json';
+import media from '../data/media.json';
+
+const base = import.meta.env.BASE_URL;
+const slots = Object.fromEntries(media.map((item) => [item.id, item]));
+const next = `${base}spirits/`;
+---
+
+<BaseLayout title="Enam Realm — Sky" description="Jelajahi enam Realm Sky: Children of the Light dari Isle of Dawn hingga Vault of Knowledge." activePage="realms" route="realms/">
+  <section class="page-intro page-intro--realms" aria-labelledby="page-title">
+    <div class="page-intro__number" aria-hidden="true">I—VI</div>
+    <div class="page-intro__copy">
+      <p class="eyebrow" data-reveal>SEBUAH PETA YANG TERBUKA</p>
+      <h1 id="page-title" class="display-title" data-reveal>Enam Realm.<br /><em>Satu langit.</em></h1>
+      <p data-reveal>Mulai dari fajar yang tenang, lalu ikuti cahaya sampai ke bintang-bintang paling jauh.</p>
+    </div>
+    <a class="scroll-cue" href="#realm-01"><span>Mulai dari awal</span><i aria-hidden="true">↓</i></a>
+  </section>
+
+  <nav class="realm-index" aria-label="Lompat ke Realm">
+    {realms.map((realm) => <a href={`#realm-${realm.number}`} aria-label={`Lompat ke ${realm.name}`}><span>{realm.number}</span><i></i></a>)}
+  </nav>
+
+  <div class="realm-scenes">
+    {realms.map((realm, index) => (
+      <section id={`realm-${realm.number}`} class={`realm-scene ${index % 2 ? 'realm-scene--reverse' : ''}`} style={`--realm-tone:${realm.tone}`} aria-labelledby={`realm-title-${realm.number}`}>
+        <div class="realm-scene__image" data-reveal><MediaFrame media={slots[realm.mediaId]} caption={realm.name} eager={index === 0} parallax={true} /></div>
+        <div class="realm-scene__copy" data-reveal>
+          <p class="eyebrow">{realm.number} / {realm.mood}</p>
+          <h2 id={`realm-title-${realm.number}`} class="section-title">{realm.name}</h2>
+          <p>{realm.description}</p>
+          {slots[realm.mediaId].status === 'verified' ? (
+            <a class="text-link" href={slots[realm.mediaId].sourceUrl} target="_blank" rel="noopener noreferrer">Tonton trailer resmi <span aria-hidden="true">↗</span></a>
+          ) : (
+            <p class="media-status-note">Visual khusus Realm ini masih menunggu sumber resmi yang bisa diverifikasi.</p>
+          )}
+        </div>
+        <span class="realm-scene__index" aria-hidden="true">{realm.number}</span>
+      </section>
+    ))}
+  </div>
+
+  <section class="next-page section-shell" aria-label="Lanjutkan perjalanan">
+    <div><p class="eyebrow">SELANJUTNYA</p><h2 class="section-title">Kisah para <em>Spirit.</em></h2></div>
+    <a class="next-page__link" href={next} data-transition><span>Spirit & Season</span><b aria-hidden="true">↗</b></a>
+  </section>
+</BaseLayout>

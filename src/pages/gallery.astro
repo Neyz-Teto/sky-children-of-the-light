@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import GalleryItem from '../components/GalleryItem.astro';
+import gallery from '../data/gallery.json';
+import media from '../data/media.json';
+
+const base = import.meta.env.BASE_URL;
+const slots = Object.fromEntries(media.map((item) => [item.id, item]));
+---
+
+<BaseLayout title="Galeri — Sky" description="Lihat potongan perjalanan Sky melalui video resmi thatgamecompany." activePage="gallery" route="gallery/">
+  <section class="page-intro page-intro--gallery" aria-labelledby="page-title">
+    <div class="page-intro__number" aria-hidden="true">∞</div>
+    <div class="page-intro__copy">
+      <p class="eyebrow" data-reveal>JENDELA KECIL KE LANGIT</p>
+      <h1 id="page-title" class="display-title" data-reveal>Potongan dunia<br /><em>yang kita temui.</em></h1>
+      <p data-reveal>Pratinjau berasal dari trailer resmi. Pilih satu untuk membuka video atau melihatnya lebih dekat.</p>
+    </div>
+    <a class="scroll-cue" href="#gallery-grid"><span>Jelajahi galeri</span><i aria-hidden="true">↓</i></a>
+  </section>
+
+  <section class="gallery-section section-shell" aria-labelledby="gallery-title">
+    <div class="gallery-heading" data-reveal><div><p class="eyebrow">ARSIP CAHAYA</p><h2 id="gallery-title" class="section-title">Lihat dari <em>berbagai arah.</em></h2></div><p class="gallery-count"><span data-gallery-count>{gallery.length}</span> potongan</p></div>
+    <div class="gallery-filters" role="group" aria-label="Saring isi galeri">
+      <button type="button" data-gallery-filter="all" aria-pressed="true">Semua</button>
+      <button type="button" data-gallery-filter="realms" aria-pressed="false">Realm</button>
+      <button type="button" data-gallery-filter="spirits" aria-pressed="false">Spirit & Season</button>
+      <button type="button" data-gallery-filter="video" aria-pressed="false">Video</button>
+    </div>
+    <div id="gallery-grid" class="gallery-grid">
+      {gallery.map((item) => <GalleryItem item={item} media={slots[item.mediaId]} />)}
+    </div>
+    <p class="gallery-note">Video dimuat hanya setelah dipilih. Thumbnail ditayangkan dari i.ytimg.com dan embed memakai YouTube no-cookie.</p>
+  </section>
+
+  <section class="next-page section-shell" aria-label="Kembali ke awal">
+    <div><p class="eyebrow">KEMBALI KE AWAL</p><h2 class="section-title">Langit masih <em>menunggu.</em></h2></div>
+    <a class="next-page__link" href={`${base}realms/`} data-transition><span>Mulai lagi dari Realm</span><b aria-hidden="true">↗</b></a>
+  </section>
+</BaseLayout>

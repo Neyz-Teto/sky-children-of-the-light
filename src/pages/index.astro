@@ -1,0 +1,72 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MediaFrame from '../components/MediaFrame.astro';
+import HeroMedia from '../components/HeroMedia.astro';
+import realms from '../data/realms.json';
+import gallery from '../data/gallery.json';
+import media from '../data/media.json';
+
+const base = import.meta.env.BASE_URL;
+const slots = Object.fromEntries(media.map((item) => [item.id, item]));
+const sections = [
+  { label: 'Realm', path: 'realms/', target: 'realms', mediaId: 'gallery-prairie', className: 'entry-block--realm', line: '01 / dunia luas' },
+  { label: 'Spirit & Season', path: 'spirits/', target: 'stories', mediaId: 'gallery-forest', className: 'entry-block--spirits', line: '02 / cerita yang tinggal' },
+  { label: 'Fakta', path: 'fun-facts/', target: 'facts', mediaId: 'fact-sanctuary', className: 'entry-block--facts', line: '03 / hal-hal kecil' },
+  { label: 'Galeri', path: 'gallery/', target: 'gallery', mediaId: 'gallery-video', className: 'entry-block--gallery', line: '04 / potongan perjalanan' },
+];
+---
+
+<BaseLayout title="Sky — sebuah perjalanan cahaya" description="Jelajahi Realm, Spirit, Season, dan cerita di balik Sky: Children of the Light." activePage="home" route="">
+  <section class="home-hero" aria-labelledby="home-title">
+    <HeroMedia media={slots['hero-video']} />
+    <div class="home-hero__shade" aria-hidden="true"></div>
+    <div class="home-hero__content">
+      <p class="eyebrow eyebrow--light" data-reveal>JEJAK CAHAYA DI ATAS AWAN</p>
+      <h1 id="home-title" class="display-title" data-reveal>Temukan jalan<br /><em>pulang ke cahaya.</em></h1>
+      <p class="hero-description" data-reveal>Terbang perlahan, temui kisah yang tertinggal, dan biarkan perjalanan membawa kita lebih dekat.</p>
+      <a class="button button--primary" href={`${base}realms/`} data-transition data-magnetic>
+        Mulai menjelajah <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+    <div class="home-hero__note"><span>sebuah dunia untuk dibagi</span><span>01 — ∞</span></div>
+    <button class="hero-sound" type="button" data-hero-sound aria-label="Buka trailer resmi di YouTube dengan suara">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M16 9a5 5 0 0 1 0 6"/></svg><span>Suara & video</span>
+    </button>
+  </section>
+
+  <section class="home-intro section-shell" aria-labelledby="home-intro-title">
+    <div class="section-kicker" data-reveal><span>sebuah perjalanan</span><span>— 01</span></div>
+    <div class="home-intro__copy" data-reveal>
+      <p class="eyebrow">KITA TAK PERLU TERBURU-BURU</p>
+      <h2 id="home-intro-title" class="section-title">Dunia ini terasa lebih luas <em>saat kita berbagi.</em></h2>
+      <p>Di antara awan, cahaya, dan jejak para Spirit, selalu ada ruang untuk berhenti sejenak. Pilih arahmu, lalu ikuti rasa ingin tahu.</p>
+    </div>
+    <div class="wing-divider" aria-hidden="true"><span></span><svg viewBox="0 0 80 32"><path d="M40 16c-7-11-19-13-30-10 8 3 13 8 17 13-8-2-14-1-20 3 12-1 20 2 26 7l7-13Zm0 0c7-11 19-13 30-10-8 3-13 8-17 13 8-2 14-1 20 3-12-1-20 2-26 7l-7-13Z"/></svg><span></span></div>
+  </section>
+
+  <section class="entry-section" aria-labelledby="entry-title">
+    <div class="entry-heading section-shell">
+      <p class="eyebrow" data-reveal>IKUTI ARAH CAHAYA</p>
+      <h2 id="entry-title" class="section-title" data-reveal>Empat cara untuk <em>memulai.</em></h2>
+    </div>
+    <div class="entry-grid section-shell">
+      {sections.map((item, index) => (
+        <a class={`entry-block ${item.className}`} href={`${base}${item.path}`} data-transition data-reveal data-magnetic>
+          <div class="entry-block__media"><MediaFrame media={slots[item.mediaId]} caption={item.label} interactive={false} /></div>
+          <div class="entry-block__meta"><span>{item.line}</span><span>0{index + 1}</span></div>
+          <h3>{item.label}</h3>
+          <span class="entry-block__arrow" aria-hidden="true">↗</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="home-closing section-shell" aria-labelledby="closing-title">
+    <div class="home-closing__media" data-reveal><MediaFrame media={slots['realm-isle-of-dawn']} caption="Cahaya selalu punya jalan pulang" /></div>
+    <div class="home-closing__copy" data-reveal>
+      <p class="eyebrow">KEMBALI KE LANGIT</p>
+      <h2 id="closing-title" class="section-title">Selalu ada <em>jalan berikutnya.</em></h2>
+      <a class="text-link" href={`${base}gallery/`} data-transition>Singgah sebentar di galeri <span aria-hidden="true">↗</span></a>
+    </div>
+  </section>
+</BaseLayout>
